@@ -18,15 +18,13 @@ function drawBlock() {
     activeShape.push({x:5, y:0, colour:yellow});
     activeShape.push({x:4, y:1, colour:yellow});
     activeShape.push({x:5, y:1, colour:yellow});
-    draw();
 }
 
 function drawT() {
-    activeShape.push({x:3, y:0, colour:purple});
     activeShape.push({x:4, y:0, colour:purple});
+    activeShape.push({x:3, y:0, colour:purple});
     activeShape.push({x:5, y:0, colour:purple});
     activeShape.push({x:4, y:1, colour:purple});
-    draw();
 }
 
 function drawL() {
@@ -34,7 +32,6 @@ function drawL() {
     activeShape.push({x:4, y:0, colour:orange});
     activeShape.push({x:5, y:0, colour:orange});
     activeShape.push({x:3, y:1, colour:orange});
-    draw();
 }
 
 function draw() {
@@ -51,7 +48,6 @@ function draw() {
             ctx.fillStyle = shape.colour;
             ctx.fillRect((boxWidth * shape.x), (boxHeight * shape.y), boxWidth, boxHeight);
             ctx.strokeRect((boxWidth * shape.x), (boxHeight * shape.y), boxWidth, boxHeight);
-        
         }
     }
 }
@@ -65,7 +61,6 @@ function freezeShape(activeShape) {
 
     let deletedRows = [];
     let rows = [];
-    let sortedRows = [];
     let newFrozenBlocks = [];
     for (const block of frozenBlocks) {
         if (rows[block.y]) {
@@ -117,6 +112,16 @@ function freezeShape(activeShape) {
     drawShape();
 }
 
+function moveShape(direction) {
+        if (direction === 'left') {
+            for (let i = 0; i < activeShape.length; i++) { activeShape[i].x -= 1; }   
+        } else if (direction === 'right') {
+            for (let i = 0; i < activeShape.length; i++) { activeShape[i].x += 1; }   
+        } else {
+            for (let i = 0; i < activeShape.length; i++) { activeShape[i].y += 1; }   
+        }
+        
+}
 
 document.addEventListener('keydown', (e) => {
     let name = e.key;
@@ -138,10 +143,7 @@ document.addEventListener('keydown', (e) => {
                 }
             } 
         }
-        for (let i = 0; i < activeShape.length; i++) {
-            activeShape[i].y += 1;   
-        }
-        draw();
+        moveShape('down');
     }          
     else if (name === 'ArrowLeft') { 
         for (let i = 0; i < activeShape.length; i++) {  
@@ -156,13 +158,9 @@ document.addEventListener('keydown', (e) => {
                 if (activeShape[i].x ==  0)  {
                 return;
                 }
-            }
-            
+            }   
         }
-        for (let i = 0; i < activeShape.length; i++) {
-            activeShape[i].x -= 1;   
-        }
-        draw();
+        moveShape('left');
     }      
     else if (name === 'ArrowRight') { 
         for (let i = 0; i < activeShape.length; i++) {  
@@ -177,16 +175,27 @@ document.addEventListener('keydown', (e) => {
                 if (activeShape[i].x ==  width - 1)  {
                 return;
                 }
-            }
-            
+            }   
         }
-        for (let i = 0; i < activeShape.length; i++) {
-            activeShape[i].x += 1;   
-        }
-
-        draw();
+        moveShape('right');
     }  
-
+    else if (name === 'ArrowUp') { 
+    /*
+    activeShape.push({x:4, y:0, colour:purple});
+    activeShape.push({x:3, y:0, colour:purple});
+    activeShape.push({x:5, y:0, colour:purple});
+    activeShape.push({x:4, y:1, colour:purple});
+    */
+   debugger;
+        for (let i = 1; i < activeShape.length; i++) {
+            if (activeShape[i].x < activeShape[0] && activeShape[i].y === activeShape[0].y) {
+                activeShape[i].y = activeShape[0].y - (activeShape[i].x - activeShape[0].x);
+                activeShape[i].x = activeShape[0].x;
+                
+            }    
+        }
+    }  
+    draw();
 }, false);
 
 function drawShape() {
@@ -200,7 +209,6 @@ function drawShape() {
     else {
         drawL();
     }
-
 }
 
 drawShape();
