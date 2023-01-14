@@ -12,6 +12,7 @@ const ctx = canvas.getContext("2d");
 let yellow = "#FFFF00";
 let purple = "#CC8899";
 let orange = "#FFA500";
+let lightBlue = "#ADD8E6";
 
 function drawBlock() {
     activeShape.push({x:4, y:0, colour:yellow});
@@ -23,8 +24,9 @@ function drawBlock() {
 function drawT() {
     activeShape.push({x:4, y:0, colour:purple});
     activeShape.push({x:3, y:0, colour:purple});
-    activeShape.push({x:5, y:0, colour:purple});
     activeShape.push({x:4, y:1, colour:purple});
+    activeShape.push({x:5, y:0, colour:purple});
+
 }
 
 function drawL() {
@@ -32,6 +34,13 @@ function drawL() {
     activeShape.push({x:4, y:0, colour:orange});
     activeShape.push({x:5, y:0, colour:orange});
     activeShape.push({x:3, y:1, colour:orange});
+}
+
+function drawI() {
+    activeShape.push({x:4, y:0, colour:lightBlue});
+    activeShape.push({x:3, y:0, colour:lightBlue});
+    activeShape.push({x:5, y:0, colour:lightBlue});
+    activeShape.push({x:6, y:0, colour:lightBlue});
 }
 
 function draw() {
@@ -186,29 +195,55 @@ document.addEventListener('keydown', (e) => {
     activeShape.push({x:5, y:0, colour:purple});
     activeShape.push({x:4, y:1, colour:purple});
     */
-   debugger;
+   let rotatingShape = [];
+   rotatingShape.push(activeShape[0]);
+   //debugger;
         for (let i = 1; i < activeShape.length; i++) {
-            if (activeShape[i].x < activeShape[0] && activeShape[i].y === activeShape[0].y) {
-                activeShape[i].y = activeShape[0].y - (activeShape[i].x - activeShape[0].x);
-                activeShape[i].x = activeShape[0].x;
-                
-            }    
+            console.log(`Orig Active X:${activeShape[i].x} Y:${activeShape[i].y}`);
+            console.log(`Orig Pivot  X:${activeShape[0].x} Y:${activeShape[0].y}`);
+            // Rotate up - If current shape is immediately left of pivot shape, then move current shape to the same x-axis, 
+            // and move the current shape to the same y-axis distance above as the previous x-axis distance was to the left. 
+            if (activeShape[i].x < activeShape[0].x && activeShape[i].y ===activeShape[0].y) {
+                // Change shape was y-axis to the same distance that the shape was to the left of the pivot shape. 
+                rotatingShape.push({x:activeShape[0].x, y:activeShape[0].y - (activeShape[0].x - activeShape[i].x)})
+            } 
+            // Rotate right - If the current shape is immediate above the pivot shape, then move current shape to the same y-axis,
+            // and move the current shape to the same x-axis distance to the right as the previous y-axis distnace was above.
+            else if (activeShape[i].x === activeShape[0].x && activeShape[i].y > activeShape[0].y) {
+                // 
+                rotatingShape.push({x:activeShape[0].x - (activeShape[i].y - activeShape[0].y), y:activeShape[0].y});
+            } 
+            else if (activeShape[i].x > activeShape[0].x && activeShape[i].y ===activeShape[0].y) {
+                rotatingShape.push({x:activeShape[0].x, y:activeShape[0].y + (activeShape[i].x - activeShape[0].x)});
+            }
+            else if (activeShape[i].x === activeShape[0].x && activeShape[i].y < activeShape[0].y) {
+                // 
+                rotatingShape.push({x:activeShape[0].x + (activeShape[0].y - activeShape[i].y), y:activeShape[0].y});
+            } 
+            console.log(`New Active X:${activeShape[i].x} Y:${activeShape[i].y}`);
+            console.log(`New Pivot  X:${activeShape[0].x} Y:${activeShape[0].y}`);
+               
         }
+        activeShape =  rotatingShape;
     }  
     draw();
 }, false);
 
 function drawShape() {
-    const randomNumber = Math.floor(Math.random() * 3)
+    const randomNumber = Math.floor(Math.random() * 4)
     if (randomNumber === 0) {
         drawBlock();
     } 
     else if (randomNumber === 1) {
         drawT();
     } 
-    else {
+    else if (randomNumber === 2) {
         drawL();
     }
+    else {
+        drawI();
+    }
+    draw();
 }
 
 drawShape();
