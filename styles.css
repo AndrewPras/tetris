@@ -1,0 +1,19 @@
+body {
+    background-color: midnightblue;
+}
+
+h1 {
+    color: azure;
+}
+
+.center {
+    text-align: center;
+}
+
+.wrapper {
+    text-align: center;
+}
+
+#canvas {
+    background-color: white;
+}
