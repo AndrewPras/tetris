@@ -10,7 +10,8 @@ const canvas = document.querySelector("#canvas");
 const ctx = canvas.getContext("2d");
 
 let yellow = "#FFFF00";
-let purple = "#CC8899"
+let purple = "#CC8899";
+let orange = "#FFA500";
 
 function drawBlock() {
     activeShape.push({x:4, y:0, colour:yellow});
@@ -25,6 +26,14 @@ function drawT() {
     activeShape.push({x:4, y:0, colour:purple});
     activeShape.push({x:5, y:0, colour:purple});
     activeShape.push({x:4, y:1, colour:purple});
+    draw();
+}
+
+function drawL() {
+    activeShape.push({x:3, y:0, colour:orange});
+    activeShape.push({x:4, y:0, colour:orange});
+    activeShape.push({x:5, y:0, colour:orange});
+    activeShape.push({x:3, y:1, colour:orange});
     draw();
 }
 
@@ -79,14 +88,31 @@ function freezeShape(activeShape) {
     }
 
     frozenBlocks = newFrozenBlocks;
-
-    for (const row of deletedRows) {
-        for (const block of frozenBlocks) {
-            if (block.y < row) {
+    
+    // Sort then Reverse the deleted rows Array so that the highest row numbers come first
+    deletedRows.sort();
+    deletedRows.reverse();
+    console.log(deletedRows);    
+    
+    // Iterate from highest to lowest delete row number
+    for (let i = 0; i < deletedRows.length; i++) {
+        // If a frozen (non-deleted) block is a lower y than the current (highest active) delete row
+        // then add y+1 to the block in order to drop it by 1 row on screen.
+        for (block of frozenBlocks) {
+            if (block.y < deletedRows[i]) {
                 block.y += 1;
             }
         }
+        // If there are more that one row to delete, add 1 to each of the remaining delete rows,
+        // this is necessary because it will keep the "to be delete row" Y consistent with the
+        // blocks that we have just lowered by y+1 in the loop that is immediately above.
+        for (let j = i + 1; j < deletedRows.length; j++) {
+            deletedRows[j] += 1;
+        }
     }
+
+    // Empty deleted rows, so that old deletes don't impact future deletes
+    deletedRows = [];
     
     drawShape();
 }
@@ -164,11 +190,15 @@ document.addEventListener('keydown', (e) => {
 }, false);
 
 function drawShape() {
-    if (Math.round(Math.random())) {
+    const randomNumber = Math.floor(Math.random() * 3)
+    if (randomNumber === 0) {
         drawBlock();
     } 
-    else {
+    else if (randomNumber === 1) {
         drawT();
+    } 
+    else {
+        drawL();
     }
 
 }
