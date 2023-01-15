@@ -1,9 +1,11 @@
+
 // Set the dimensions of each tetris block
 const boxWidth = 20;
 const boxHeight = 20;
 // Set the dimensions of the board
 const width = 10;
 const height = 20;
+let fallingSpeed = 2000;
 
 // Set arrays of active and frozen block objects, these will be drawn by the draw() function
 let activeShape = [];
@@ -12,9 +14,11 @@ let frozenBlocks = [];
 // Set score related arrays
 const shapeCounts = {blockO:0, blockI:0, blockT:0, blockJ:0, blockL:0, blockS:0, blockZ:0};
 let lines = 0;
+let level = 0;
 
 const shapeCountOutput = document.querySelectorAll('.shapeCount');
 const linesOutput = document.querySelector('#lines');
+const levelOutput = document.querySelector('#level');
 const userInput = document.querySelector('#userInput');
 const canvas = document.querySelector("#canvas");
 const ctx = canvas.getContext("2d");
@@ -118,6 +122,10 @@ function freezeShape(activeShape) {
             if (rows[block.y] === 10) {
                 deletedRows.push(block.y)
                 lines += 1;
+                level = parseInt(lines / 10);
+                if (level >= 10) {
+                    fallingSpeed = fallingSpeed / (level *  .09);
+                }
             }
         }
         else {
@@ -170,69 +178,106 @@ function moveShape(direction) {
             for (let i = 0; i < activeShape.length; i++) { activeShape[i].x += 1; }   
         } else if (direction === 'down') {
             for (let i = 0; i < activeShape.length; i++) { activeShape[i].y += 1; }   
-        }
-        
+        }    
 }
 
 
 document.addEventListener('keydown', (e) => {
     let name = e.key;
             console.log(`'${name}'`);
-    if (name === 'ArrowDown') { 
-        for (let i = 0; i < activeShape.length; i++) {  
-            if (frozenBlocks.length > 0) {
-                for (let j = 0; j < frozenBlocks.length; j++) {
-                    if ((activeShape[i].x === frozenBlocks[j].x && activeShape[i].y+1 === frozenBlocks[j].y) || activeShape[i].y == height - 1)  {
-                        freezeShape(activeShape);
-                        return;
-                    }
+    if (name === 'ArrowDown') { shiftDown(); }
+    else if (name === 'ArrowLeft') { shiftLeft(); }      
+    else if (name === 'ArrowRight') { shiftRight(); }  
+    else if (name === 'ArrowUp' || name === 'f') { rotateClockwise(); }  
+    draw();
+}, false);
+
+// Randomly generate a number from 0 to 7, and draw a new shape accordingly
+function drawShape() {
+    const randomNumber = Math.floor(Math.random() * 7)
+    if (randomNumber === 0) { drawJ(); }
+    else if (randomNumber === 1) { drawT(); }
+    else if (randomNumber === 2) { drawL(); }
+    else if (randomNumber === 3) { drawI(); }
+    else if (randomNumber === 4) { drawS(); } 
+    else if (randomNumber === 5) { drawZ(); }  
+    else { drawO(); }
+    draw();
+    updateShapeCountTable();
+}
+
+
+function updateShapeCountTable() {
+    linesOutput.innerHTML = `Lines: ${lines}`;
+    levelOutput.innerHTML = `Level: ${level}`;
+    for (const counter of shapeCountOutput) {
+        counter.innerHTML = shapeCounts[counter.id];
+    }
+}
+
+
+function shiftDown() {
+    for (let i = 0; i < activeShape.length; i++) {  
+        if (frozenBlocks.length > 0) {
+            for (let j = 0; j < frozenBlocks.length; j++) {
+                if ((activeShape[i].x === frozenBlocks[j].x && activeShape[i].y+1 === frozenBlocks[j].y) || activeShape[i].y == height - 1)  {
+                    freezeShape(activeShape);
+                    return;
                 }
-            }  
-            else {
-                if (activeShape[i].y == height - 1)  {
-                freezeShape(activeShape);
-                return;
+            }
+        }  
+        else {
+            if (activeShape[i].y == height - 1)  {
+            freezeShape(activeShape);
+            return;
+            }
+        } 
+    }
+    moveShape('down');
+    draw();
+}
+
+
+function shiftLeft() {
+    for (let i = 0; i < activeShape.length; i++) {  
+        if (frozenBlocks.length > 0) {
+            for (let j = 0; j < frozenBlocks.length; j++) {
+                if ((activeShape[i].x - 1 === frozenBlocks[j].x && activeShape[i].y === frozenBlocks[j].y) || activeShape[i].x == 0)  {
+                    return;
                 }
-            } 
-        }
-        moveShape('down');
-    }          
-    else if (name === 'ArrowLeft') { 
-        for (let i = 0; i < activeShape.length; i++) {  
-            if (frozenBlocks.length > 0) {
-                for (let j = 0; j < frozenBlocks.length; j++) {
-                    if ((activeShape[i].x - 1 === frozenBlocks[j].x && activeShape[i].y === frozenBlocks[j].y) || activeShape[i].x == 0)  {
-                        return;
-                    }
+            }
+        }  
+        else {
+            if (activeShape[i].x ==  0)  {
+            return;
+            }
+        }   
+    }
+    moveShape('left');
+}
+
+
+function shiftRight() {
+    for (let i = 0; i < activeShape.length; i++) {  
+        if (frozenBlocks.length > 0) {
+            for (let j = 0; j < frozenBlocks.length; j++) {
+                if ((activeShape[i].x + 1 === frozenBlocks[j].x && activeShape[i].y === frozenBlocks[j].y) || activeShape[i].x == width - 1)  {
+                    return;
                 }
-            }  
-            else {
-                if (activeShape[i].x ==  0)  {
-                return;
-                }
-            }   
-        }
-        moveShape('left');
-    }      
-    else if (name === 'ArrowRight') { 
-        for (let i = 0; i < activeShape.length; i++) {  
-            if (frozenBlocks.length > 0) {
-                for (let j = 0; j < frozenBlocks.length; j++) {
-                    if ((activeShape[i].x + 1 === frozenBlocks[j].x && activeShape[i].y === frozenBlocks[j].y) || activeShape[i].x == width - 1)  {
-                        return;
-                    }
-                }
-            }  
-            else {
-                if (activeShape[i].x ==  width - 1)  {
-                return;
-                }
-            }   
-        }
-        moveShape('right');
-    }  
-    else if (name === 'ArrowUp' || name === 'f') { 
-        let rotatingShape = [];
+            }
+        }  
+        else {
+            if (activeShape[i].x ==  width - 1)  {
+            return;
+            }
+        }   
+    }
+    moveShape('right');
+}
+
+
+function rotateClockwise(){
+    let rotatingShape = [];
         rotatingShape.push(activeShape[0]);
    
         for (let i = 1; i < activeShape.length; i++) {
@@ -284,37 +329,17 @@ document.addEventListener('keydown', (e) => {
                 rotatingShape = [];
                 return;
             }
+            for (const frozenBlock of frozenBlocks) {
+                if (block.x === frozenBlock.x && block.y === frozenBlock.y) {
+                    rotatingShape = [];
+                    return;
+                }
+            }
         }
         activeShape =  rotatingShape;
         rotatingShape = [];
-    }  
-    draw();
-}, false);
-
-// Randomly generate a number from 0 to 7, and draw a new shape accordingly
-function drawShape() {
-    const randomNumber = Math.floor(Math.random() * 7)
-    if (randomNumber === 0) { drawJ(); }
-    else if (randomNumber === 1) { drawT(); }
-    else if (randomNumber === 2) { drawL(); }
-    else if (randomNumber === 3) { drawI(); }
-    else if (randomNumber === 4) { drawS(); } 
-    else if (randomNumber === 5) { drawZ(); }  
-    else { drawO(); }
-    draw();
-    updateShapeCountTable();
-    
 }
-
-function updateShapeCountTable() {
-    linesOutput.innerHTML = `Lines: ${lines}`;
-    //debugger;
-    for (const counter of shapeCountOutput) {
-        counter.innerHTML = shapeCounts[counter.id];
-    }
-    //shapeCountOutput[id='#Block-S'].innerHTML = shapeCounts['s'];
-}
-
 
 // Draw a random shape on page load
 drawShape();
+window.setInterval(shiftDown, fallingSpeed);
