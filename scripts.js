@@ -10,9 +10,10 @@ let activeShape = [];
 let frozenBlocks = [];
 
 // Set score related arrays
-const shapeCounts = [{o:0, i:0, t:0, j:0, l:0, s:0, z:0}];
+const shapeCounts = {blockO:0, blockI:0, blockT:0, blockJ:0, blockL:0, blockS:0, blockZ:0};
 let lines = 0;
 
+const shapeCountOutput = document.querySelectorAll('.shapeCount');
 const linesOutput = document.querySelector('#lines');
 const userInput = document.querySelector('#userInput');
 const canvas = document.querySelector("#canvas");
@@ -32,6 +33,7 @@ function drawO() {
     activeShape.push({x:5, y:0, colour:yellow}); 
     activeShape.push({x:4, y:1, colour:yellow});
     activeShape.push({x:5, y:1, colour:yellow});
+    shapeCounts['blockO'] += 1;
 }
 
 function drawT() {
@@ -39,6 +41,7 @@ function drawT() {
     activeShape.push({x:3, y:0, colour:purple});
     activeShape.push({x:4, y:1, colour:purple});
     activeShape.push({x:5, y:0, colour:purple});
+    shapeCounts['blockT'] += 1;
 }
 
 function drawL() {
@@ -46,6 +49,7 @@ function drawL() {
     activeShape.push({x:3, y:0, colour:orange});
     activeShape.push({x:5, y:0, colour:orange});
     activeShape.push({x:3, y:1, colour:orange});
+    shapeCounts['blockL'] += 1;
 }
 
 function drawJ() {
@@ -53,6 +57,7 @@ function drawJ() {
     activeShape.push({x:3, y:0, colour:blue});
     activeShape.push({x:5, y:0, colour:blue});
     activeShape.push({x:5, y:1, colour:blue});
+    shapeCounts['blockJ'] += 1;
 }
 
 function drawI() {
@@ -60,6 +65,7 @@ function drawI() {
     activeShape.push({x:3, y:0, colour:lightBlue});
     activeShape.push({x:4, y:0, colour:lightBlue});
     activeShape.push({x:6, y:0, colour:lightBlue});
+    shapeCounts['blockI'] += 1;
 }
 
 function drawS() {
@@ -67,6 +73,7 @@ function drawS() {
     activeShape.push({x:3, y:1, colour:green});
     activeShape.push({x:4, y:0, colour:green});
     activeShape.push({x:5, y:0, colour:green});
+    shapeCounts['blockS'] += 1;
 }
 
 function drawZ() {
@@ -74,6 +81,7 @@ function drawZ() {
     activeShape.push({x:5, y:1, colour:red});
     activeShape.push({x:4, y:0, colour:red});
     activeShape.push({x:3, y:0, colour:red});
+    shapeCounts['blockZ'] += 1;
 }
 
 function draw() {
@@ -165,6 +173,7 @@ function moveShape(direction) {
         }
         
 }
+
 
 document.addEventListener('keydown', (e) => {
     let name = e.key;
@@ -293,8 +302,19 @@ function drawShape() {
     else if (randomNumber === 5) { drawZ(); }  
     else { drawO(); }
     draw();
-    linesOutput.innerHTML = `Lines: ${lines}`;
+    updateShapeCountTable();
+    
 }
+
+function updateShapeCountTable() {
+    linesOutput.innerHTML = `Lines: ${lines}`;
+    //debugger;
+    for (const counter of shapeCountOutput) {
+        counter.innerHTML = shapeCounts[counter.id];
+    }
+    //shapeCountOutput[id='#Block-S'].innerHTML = shapeCounts['s'];
+}
+
 
 // Draw a random shape on page load
 drawShape();
