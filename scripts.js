@@ -1,15 +1,19 @@
+// Set the dimensions of each tetris block
 const boxWidth = 20;
 const boxHeight = 20;
+// Set the dimensions of the board
 const width = 10;
-const height = 24;
+const height = 20;
+
+//
 let activeShape = [];
 let frozenBlocks = [];
-let rotatingShape = [];
 
 const userInput = document.querySelector('#userInput');
 const canvas = document.querySelector("#canvas");
 const ctx = canvas.getContext("2d");
 
+// Set colours of the blocks
 let yellow = "#FFFF00";
 let purple = "#CC8899";
 let orange = "#FFA500";
@@ -213,16 +217,9 @@ document.addEventListener('keydown', (e) => {
         moveShape('right');
     }  
     else if (name === 'ArrowUp') { 
-    /*
-    activeShape.push({x:4, y:0, colour:purple});
-    activeShape.push({x:3, y:0, colour:purple});
-    activeShape.push({x:5, y:0, colour:purple});
-    activeShape.push({x:4, y:1, colour:purple});
-    */
-   //debugger;
+        let rotatingShape = [];
+        rotatingShape.push(activeShape[0]);
    
-   rotatingShape.push(activeShape[0]);
-   //debugger;
         for (let i = 1; i < activeShape.length; i++) {
             console.log(`Orig Active X:${activeShape[i].x} Y:${activeShape[i].y}`);
             console.log(`Orig Pivot  X:${activeShape[0].x} Y:${activeShape[0].y}`);
@@ -266,36 +263,31 @@ document.addEventListener('keydown', (e) => {
             console.log(`New Pivot  X:${activeShape[0].x} Y:${activeShape[0].y}`);
                
         }
+        //debugger;
+        for (const block of rotatingShape) {
+            if (block.x < 0 || block.x >= width || block.y < 0 || block.y >= height) {
+                rotatingShape = [];
+                return;
+            }
+        }
         activeShape =  rotatingShape;
         rotatingShape = [];
     }  
     draw();
 }, false);
 
+// Randomly generate a number from 0 to 7, and draw a new shape accordingly
 function drawShape() {
     const randomNumber = Math.floor(Math.random() * 7)
-    if (randomNumber === 0) {
-        drawO();
-    } 
-    else if (randomNumber === 1) {
-        drawT();
-    } 
-    else if (randomNumber === 2) {
-        drawL();
-    }
-    else if (randomNumber === 3) {
-        drawI();
-    }
-    else if (randomNumber === 4) {
-        drawS();
-    } 
-    else if (randomNumber === 5) {
-        drawZ();
-    }  
-    else {
-        drawJ();
-    }
+    if (randomNumber === 0) { drawJ(); }
+    else if (randomNumber === 1) { drawT(); }
+    else if (randomNumber === 2) { drawL(); }
+    else if (randomNumber === 3) { drawI(); }
+    else if (randomNumber === 4) { drawS(); } 
+    else if (randomNumber === 5) { drawZ(); }  
+    else { drawO(); }
     draw();
 }
 
+// Draw a random shape on page load
 drawShape();
