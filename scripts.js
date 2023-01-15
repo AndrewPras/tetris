@@ -4,6 +4,7 @@ const width = 10;
 const height = 24;
 let activeShape = [];
 let frozenBlocks = [];
+let rotatingShape = [];
 
 const userInput = document.querySelector('#userInput');
 const canvas = document.querySelector("#canvas");
@@ -13,34 +14,57 @@ let yellow = "#FFFF00";
 let purple = "#CC8899";
 let orange = "#FFA500";
 let lightBlue = "#ADD8E6";
+let blue = "#0000FF";
+let red = "#FF0000";
+let green = "#00FF00";
 
-function drawBlock() {
-    activeShape.push({x:4, y:0, colour:yellow});
-    activeShape.push({x:5, y:0, colour:yellow});
+function drawO() {
+    activeShape.push({x:4, y:0, colour:yellow}); // Pivot block
+    activeShape.push({x:5, y:0, colour:yellow}); 
     activeShape.push({x:4, y:1, colour:yellow});
     activeShape.push({x:5, y:1, colour:yellow});
 }
 
 function drawT() {
-    activeShape.push({x:4, y:0, colour:purple});
+    activeShape.push({x:4, y:0, colour:purple}); // Pivot block
     activeShape.push({x:3, y:0, colour:purple});
     activeShape.push({x:4, y:1, colour:purple});
     activeShape.push({x:5, y:0, colour:purple});
-
 }
 
 function drawL() {
+    activeShape.push({x:4, y:0, colour:orange}); // Pivot block
     activeShape.push({x:3, y:0, colour:orange});
-    activeShape.push({x:4, y:0, colour:orange});
     activeShape.push({x:5, y:0, colour:orange});
     activeShape.push({x:3, y:1, colour:orange});
 }
 
+function drawJ() {
+    activeShape.push({x:4, y:0, colour:blue}); // Pivot block
+    activeShape.push({x:3, y:0, colour:blue});
+    activeShape.push({x:5, y:0, colour:blue});
+    activeShape.push({x:5, y:1, colour:blue});
+}
+
 function drawI() {
-    activeShape.push({x:4, y:0, colour:lightBlue});
+    activeShape.push({x:5, y:0, colour:lightBlue}); // Pivot block
     activeShape.push({x:3, y:0, colour:lightBlue});
-    activeShape.push({x:5, y:0, colour:lightBlue});
+    activeShape.push({x:4, y:0, colour:lightBlue});
     activeShape.push({x:6, y:0, colour:lightBlue});
+}
+
+function drawS() {
+    activeShape.push({x:4, y:1, colour:green}); // Pivot block
+    activeShape.push({x:3, y:1, colour:green});
+    activeShape.push({x:4, y:0, colour:green});
+    activeShape.push({x:5, y:0, colour:green});
+}
+
+function drawZ() {
+    activeShape.push({x:4, y:1, colour:red}); // Pivot block
+    activeShape.push({x:5, y:1, colour:red});
+    activeShape.push({x:4, y:0, colour:red});
+    activeShape.push({x:3, y:0, colour:red});
 }
 
 function draw() {
@@ -126,7 +150,7 @@ function moveShape(direction) {
             for (let i = 0; i < activeShape.length; i++) { activeShape[i].x -= 1; }   
         } else if (direction === 'right') {
             for (let i = 0; i < activeShape.length; i++) { activeShape[i].x += 1; }   
-        } else {
+        } else if (direction === 'down') {
             for (let i = 0; i < activeShape.length; i++) { activeShape[i].y += 1; }   
         }
         
@@ -195,7 +219,8 @@ document.addEventListener('keydown', (e) => {
     activeShape.push({x:5, y:0, colour:purple});
     activeShape.push({x:4, y:1, colour:purple});
     */
-   let rotatingShape = [];
+   //debugger;
+   
    rotatingShape.push(activeShape[0]);
    //debugger;
         for (let i = 1; i < activeShape.length; i++) {
@@ -205,34 +230,52 @@ document.addEventListener('keydown', (e) => {
             // and move the current shape to the same y-axis distance above as the previous x-axis distance was to the left. 
             if (activeShape[i].x < activeShape[0].x && activeShape[i].y ===activeShape[0].y) {
                 // Change shape was y-axis to the same distance that the shape was to the left of the pivot shape. 
-                rotatingShape.push({x:activeShape[0].x, y:activeShape[0].y - (activeShape[0].x - activeShape[i].x)})
+                rotatingShape.push({x:activeShape[0].x, y:activeShape[0].y - (activeShape[0].x - activeShape[i].x), colour:activeShape[i].colour})
             } 
             // Rotate right - If the current shape is immediate above the pivot shape, then move current shape to the same y-axis,
             // and move the current shape to the same x-axis distance to the right as the previous y-axis distnace was above.
             else if (activeShape[i].x === activeShape[0].x && activeShape[i].y > activeShape[0].y) {
                 // 
-                rotatingShape.push({x:activeShape[0].x - (activeShape[i].y - activeShape[0].y), y:activeShape[0].y});
+                rotatingShape.push({x:activeShape[0].x - (activeShape[i].y - activeShape[0].y), y:activeShape[0].y, colour:activeShape[i].colour});
             } 
             else if (activeShape[i].x > activeShape[0].x && activeShape[i].y ===activeShape[0].y) {
-                rotatingShape.push({x:activeShape[0].x, y:activeShape[0].y + (activeShape[i].x - activeShape[0].x)});
+                rotatingShape.push({x:activeShape[0].x, y:activeShape[0].y + (activeShape[i].x - activeShape[0].x), colour:activeShape[i].colour});
             }
             else if (activeShape[i].x === activeShape[0].x && activeShape[i].y < activeShape[0].y) {
                 // 
-                rotatingShape.push({x:activeShape[0].x + (activeShape[0].y - activeShape[i].y), y:activeShape[0].y});
+                rotatingShape.push({x:activeShape[0].x + (activeShape[0].y - activeShape[i].y), y:activeShape[0].y, colour:activeShape[i].colour});
+            }
+            // current block x and y is less than pivot block
+            else if (activeShape[i].x < activeShape[0].x && activeShape[i].y < activeShape[0].y) {
+                rotatingShape.push({x:activeShape[0].x + (activeShape[0].x -  activeShape[i].x), y:activeShape[i].y, colour:activeShape[i].colour});
             } 
+            // Current block x > than pivot and current block y < pivot
+            else if (activeShape[i].x > activeShape[0].x && activeShape[i].y < activeShape[0].y) {
+                rotatingShape.push({x:activeShape[i].x, y:activeShape[0].y + (activeShape[0].y - activeShape[i].y), colour:activeShape[i].colour});
+            }
+            // current block x and y is greater than pivot block
+            else if (activeShape[i].x > activeShape[0].x && activeShape[i].y > activeShape[0].y) {
+                rotatingShape.push({x:activeShape[0].x - (activeShape[i].x - activeShape[0].x), y:activeShape[i].y, colour:activeShape[i].colour});
+            }
+            // Current block x < than pivot and current block y > pivot
+            else if (activeShape[i].x < activeShape[0].x && activeShape[i].y > activeShape[0].y) {
+                rotatingShape.push({x:activeShape[i].x, y:activeShape[0].y - (activeShape[i].y - activeShape[0].y), colour:activeShape[i].colour});
+            }
+
             console.log(`New Active X:${activeShape[i].x} Y:${activeShape[i].y}`);
             console.log(`New Pivot  X:${activeShape[0].x} Y:${activeShape[0].y}`);
                
         }
         activeShape =  rotatingShape;
+        rotatingShape = [];
     }  
     draw();
 }, false);
 
 function drawShape() {
-    const randomNumber = Math.floor(Math.random() * 4)
+    const randomNumber = Math.floor(Math.random() * 7)
     if (randomNumber === 0) {
-        drawBlock();
+        drawO();
     } 
     else if (randomNumber === 1) {
         drawT();
@@ -240,8 +283,17 @@ function drawShape() {
     else if (randomNumber === 2) {
         drawL();
     }
-    else {
+    else if (randomNumber === 3) {
         drawI();
+    }
+    else if (randomNumber === 4) {
+        drawS();
+    } 
+    else if (randomNumber === 5) {
+        drawZ();
+    }  
+    else {
+        drawJ();
     }
     draw();
 }
