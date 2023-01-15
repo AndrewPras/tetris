@@ -5,10 +5,15 @@ const boxHeight = 20;
 const width = 10;
 const height = 20;
 
-//
+// Set arrays of active and frozen block objects, these will be drawn by the draw() function
 let activeShape = [];
 let frozenBlocks = [];
 
+// Set score related arrays
+const shapeCounts = [{o:0, i:0, t:0, j:0, l:0, s:0, z:0}];
+let lines = 0;
+
+const linesOutput = document.querySelector('#lines');
 const userInput = document.querySelector('#userInput');
 const canvas = document.querySelector("#canvas");
 const ctx = canvas.getContext("2d");
@@ -104,6 +109,7 @@ function freezeShape(activeShape) {
             rows[block.y] += 1;
             if (rows[block.y] === 10) {
                 deletedRows.push(block.y)
+                lines += 1;
             }
         }
         else {
@@ -216,7 +222,7 @@ document.addEventListener('keydown', (e) => {
         }
         moveShape('right');
     }  
-    else if (name === 'ArrowUp') { 
+    else if (name === 'ArrowUp' || name === 'f') { 
         let rotatingShape = [];
         rotatingShape.push(activeShape[0]);
    
@@ -287,6 +293,7 @@ function drawShape() {
     else if (randomNumber === 5) { drawZ(); }  
     else { drawO(); }
     draw();
+    linesOutput.innerHTML = `Lines: ${lines}`;
 }
 
 // Draw a random shape on page load
